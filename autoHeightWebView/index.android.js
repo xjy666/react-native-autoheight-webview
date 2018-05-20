@@ -53,6 +53,7 @@ export default class AutoHeightWebView extends PureComponent {
     onLoad: PropTypes.func,
     onLoadStart: PropTypes.func,
     onLoadEnd: PropTypes.func,
+    onMessage: PropTypes.func,
     // works if set enableBaseUrl to true; add web/files... to android/app/src/assets/
     files: PropTypes.arrayOf(
       PropTypes.shape({
@@ -147,6 +148,7 @@ export default class AutoHeightWebView extends PureComponent {
   }
 
   onMessage = e => {
+    if (this.props.onMessage) this.props.onMessage(e);
     const height = parseInt(isBelowKitKat ? e.nativeEvent.message : e.nativeEvent.data);
     if (height && height !== this.state.height) {
       const { enableAnimation, animationDuration, heightOffset } = this.props;
