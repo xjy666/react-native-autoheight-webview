@@ -84,6 +84,9 @@ export default class AutoHeightWebView extends PureComponent {
   onMessage = (e) => {
     if (this.props.onMessage) this.props.onMessage(e);
   }
+  postMessage(data) {
+    this.webView.postMessage(data);
+  }
   render() {
     const { height, script } = this.state;
     const {
