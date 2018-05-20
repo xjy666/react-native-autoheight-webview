@@ -28,6 +28,7 @@ export default class AutoHeightWebView extends PureComponent {
     onLoad: PropTypes.func,
     onLoadStart: PropTypes.func,
     onLoadEnd: PropTypes.func,
+    onMessage: PropTypes.func,
     onShouldStartLoadWithRequest: PropTypes.func,
     // add web/files... to project root
     files: PropTypes.arrayOf(
@@ -80,7 +81,9 @@ export default class AutoHeightWebView extends PureComponent {
   stopLoading() {
     this.webView.stopLoading();
   }
-
+  onMessage = (e) => {
+    if (this.props.onMessage) this.props.onMessage(e);
+  }
   render() {
     const { height, script } = this.state;
     const {
@@ -109,6 +112,7 @@ export default class AutoHeightWebView extends PureComponent {
         ]}
       >
         <WebView
+          onMessage={this.onMessage}
           ref={this.getWebView}
           onError={onError}
           onLoad={onLoad}
