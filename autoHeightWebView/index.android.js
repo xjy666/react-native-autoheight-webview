@@ -170,7 +170,7 @@ export default class AutoHeightWebView extends PureComponent {
     if (height) {
       const { enableAnimation, animationDuration, heightOffset } = this.props;
       enableAnimation && this.opacityAnimatedValue.setValue(0);
-      this.stopInterval();
+      if (this.heightEqualTime >= MAX_EQUAL_TIME) this.stopInterval();
       let nextState = {
         heightOffset,
         height,
