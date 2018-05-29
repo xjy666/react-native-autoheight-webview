@@ -21,6 +21,10 @@ import Immutable from 'immutable';
 
 import { getScript, onHeightUpdated, domMutationObserveScript, getHeight } from './common.js';
 
+const tag = 'RCTAutoHeightWebView';
+
+const MAX_EQUAL_TIME = 20;
+
 const RCTAutoHeightWebView = requireNativeComponent('RCTAutoHeightWebView', AutoHeightWebView, {
   nativeOnly: {
     nativeOnly: {
@@ -82,6 +86,7 @@ export default class AutoHeightWebView extends PureComponent {
       heightOffset: 0,
       script: getScript(props, baseScript)
     };
+    this.heightEqualTime = 0;
   }
 
   componentDidMount() {
@@ -134,31 +139,43 @@ export default class AutoHeightWebView extends PureComponent {
   }
 
   startInterval() {
+    // console.log(tag + 'start interval');
     this.finishInterval = false;
+    if (this.interval) return;
     this.interval = setInterval(() => {
       if (!this.finishInterval) {
+        // console.log(tag, 'post message get body height');
         isBelowKitKat ? this.sendToWebView('getBodyHeight') : this.postMessage('getBodyHeight');
       }
-    }, 205);
+    }, 1000);
   }
 
   stopInterval() {
     this.finishInterval = true;
-    clearInterval(this.interval);
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
   }
 
   onMessage = e => {
+    // console.log(tag + ' origin message , ', e.nativeEvent);
     if (this.props.onMessage) this.props.onMessage(e);
     const height = parseInt(isBelowKitKat ? e.nativeEvent.message : e.nativeEvent.data);
-    if (height && height !== this.state.height) {
+    if (!height || this.heightEqualTime > MAX_EQUAL_TIME) return;
+    if (height && height === this.state.height) {
+      this.heightEqualTime += 1;
+    } else if (height !== this.state.height) {
+      this.heightEqualTime = 0;
+    }
+    if (height) {
       const { enableAnimation, animationDuration, heightOffset } = this.props;
       enableAnimation && this.opacityAnimatedValue.setValue(0);
       this.stopInterval();
-      this.setState(
-        {
-          heightOffset,
-          height
-        },
+      let nextState = {
+        heightOffset,
+        height,
+      };
+      this.setState(nextState,
         () => {
           enableAnimation
             ? Animated.timing(this.opacityAnimatedValue, {
@@ -184,6 +201,7 @@ export default class AutoHeightWebView extends PureComponent {
   };
 
   onLoadingFinish = event => {
+    // console.log(tag +' loading finished');
     const { onLoad, onLoadEnd } = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
