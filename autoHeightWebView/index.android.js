@@ -147,7 +147,7 @@ export default class AutoHeightWebView extends PureComponent {
         // console.log(tag, 'post message get body height');
         isBelowKitKat ? this.sendToWebView('getBodyHeight') : this.postMessage('getBodyHeight');
       }
-    }, 1000);
+    }, 500);
   }
 
   stopInterval() {
@@ -161,7 +161,7 @@ export default class AutoHeightWebView extends PureComponent {
     // console.log(tag + ' origin message , ', e.nativeEvent);
     if (this.props.onMessage) this.props.onMessage(e);
     const height = parseInt(isBelowKitKat ? e.nativeEvent.message : e.nativeEvent.data);
-    if (!height || this.heightEqualTime > MAX_EQUAL_TIME) return;
+    if (height === null || height === undefined || this.heightEqualTime > MAX_EQUAL_TIME) return;
     if (height && height === this.state.height) {
       this.heightEqualTime += 1;
     } else if (height !== this.state.height) {
