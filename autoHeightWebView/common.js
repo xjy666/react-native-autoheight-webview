@@ -50,7 +50,8 @@ var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 var observer = new MutationObserver(updateHeight);
 observer.observe(document, {
     subtree: true,
-    attributes: true
+    attributes: true,
+    childList: true,
 });
 `;
 
