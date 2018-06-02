@@ -51,7 +51,6 @@ var observer = new MutationObserver(updateHeight);
 observer.observe(document, {
     subtree: true,
     attributes: true,
-    childList: true,
 });
 `;
 
