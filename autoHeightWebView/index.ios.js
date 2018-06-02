@@ -52,12 +52,16 @@ export default class AutoHeightWebView extends PureComponent {
     props.enableAnimation && (this.opacityAnimatedValue = new Animated.Value(0));
     this.state = {
       height: 0,
-      script: getScript(props, baseScript, iframeBaseScript)
+      script: getScript(props, this.getBaseScript(), iframeBaseScript)
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ script: getScript(nextProps, baseScript, iframeBaseScript) });
+    this.setState({ script: getScript(nextProps, this.getBaseScript(), iframeBaseScript) });
+  }
+
+getBaseScript = () => {
+    return this.props.source.html ? baseScript : uriSourceBaseScript;
   }
 
   handleNavigationStateChange = navState => {
@@ -160,6 +164,40 @@ const getHeight = `
       }
       return height;
     }
+    `;
+const observeScript =
+  `
+var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+var observer = new MutationObserver(updateHeight);
+observer.observe(document, {
+    subtree: true,
+    attributes: true,
+    childList: true,
+});
+`;
+
+const uriSourceBaseScript = `
+    ;
+    ${getHeight}
+    (function () {
+        var i = 0;
+        var height = 0;
+        var wrapper = document.createElement('div');
+        wrapper.id = 'height-wrapper';
+        while (document.body.firstChild instanceof Node) {
+            wrapper.appendChild(document.body.firstChild);
+        }
+        document.body.appendChild(wrapper);
+        function updateHeight() {
+            if(document.body.offsetHeight !== height) {
+                height = getHeight(wrapper.clientHeight);
+                document.title = height;
+                window.location.hash = ++i;
+            }
+        }
+        ${commonScript}
+        ${observeScript}
+    } ());
     `;
 
 const baseScript = `
