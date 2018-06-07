@@ -105,7 +105,7 @@ export default class AutoHeightWebView extends PureComponent {
     // const absDy = Math.abs(vy);
     // console.log('onMoveShouldSetPanResponder, dx = ', absDx);
     // console.log('onMoveShouldSetPanResponder, vy = ', absDy);
-    return absDx > 10;
+    return absDx > 1;
   }
 
   onPanResponderTerminate = (event, gestureState) => {
