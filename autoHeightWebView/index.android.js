@@ -12,7 +12,8 @@ import {
   Platform,
   UIManager,
   ViewPropTypes,
-  WebView
+  WebView,
+  PanResponder,
 } from 'react-native';
 
 import PropTypes from 'prop-types';
@@ -88,6 +89,33 @@ export default class AutoHeightWebView extends PureComponent {
     };
     this.heightEqualTime = 0;
   }
+
+  componentWillMount() {
+    this.panResponder = PanResponder.create({
+      // onStartShouldSetPanResponder: (event, gestureState) => this.onStartShouldSetPanResponder(event, gestureState),
+      // onMoveShouldSetPanResponderCapture: (event, gestureState) => this.onMoveShouldSetPanResponderCapture(event, gestureState),
+      onMoveShouldSetPanResponder: (event, gestureState) => this.onMoveShouldSetPanResponder(event, gestureState),
+      onPanResponderTerminate: (event, gestureState) => this.onPanResponderTerminate(event, gestureState),
+    });
+  }
+
+  onMoveShouldSetPanResponder = (event, gestureState) => {
+    const { dx, vy } = gestureState;
+    const absDx = Math.abs(dx);
+    // const absDy = Math.abs(vy);
+    // console.log('onMoveShouldSetPanResponder, dx = ', absDx);
+    // console.log('onMoveShouldSetPanResponder, vy = ', absDy);
+    return absDx > 10;
+  }
+
+  onPanResponderTerminate = (event, gestureState) => {
+    const { dx, dy } = gestureState;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+    // console.log('onPanResponderTerminate, dx = ', absDy);
+    // return dx < 0.1;
+  }
+
 
   componentDidMount() {
     this.startInterval();
@@ -252,6 +280,7 @@ export default class AutoHeightWebView extends PureComponent {
             messagingEnabled={true}
             // below kitkat
             onChange={this.onMessage}
+            {...this.panResponder.panHandlers}
           />
         )}
       </Animated.View>
