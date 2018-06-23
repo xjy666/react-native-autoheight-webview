@@ -126,7 +126,7 @@ getBaseScript = () => {
           onLoadStart={onLoadStart}
           onLoadEnd={onLoadEnd}
           onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-          style={styles.webView}
+          style={[styles.webView, style]}
           injectedJavaScript={script + customScript}
           scrollEnabled={false}
           scalesPageToFit={scalesPageToFit}
