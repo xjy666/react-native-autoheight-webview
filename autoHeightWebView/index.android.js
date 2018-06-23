@@ -271,7 +271,7 @@ export default class AutoHeightWebView extends PureComponent {
             onLoadingFinish={this.onLoadingFinish}
             onLoadingError={this.onLoadingError}
             ref={this.getWebView}
-            style={styles.webView}
+            style={[styles.webView, style]}
             javaScriptEnabled={true}
             injectedJavaScript={script + customScript}
             scalesPageToFit={scalesPageToFit}
