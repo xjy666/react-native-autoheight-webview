@@ -119,7 +119,7 @@ getBaseScript = () => {
         ]}
       >
         <WebView
-          onMessage={this.onMessage}
+          onMessage={this.props.onMessage}
           ref={this.getWebView}
           onError={onError}
           onLoad={onLoad}
